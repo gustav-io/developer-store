@@ -74,19 +74,21 @@ public class CreateUserHandlerTests
     }
 
     /// <summary>
-    /// Tests that an invalid user creation request throws a validation exception.
+    /// Tests that an empty command fails command validation (executed by the MediatR pipeline).
     /// </summary>
-    [Fact(DisplayName = "Given invalid user data When creating user Then throws validation exception")]
-    public async Task Handle_InvalidRequest_ThrowsValidationException()
+    [Fact(DisplayName = "Given invalid user data When validating command Then validation fails")]
+    public async Task Validate_InvalidCommand_ReturnsErrors()
     {
         // Given
-        var command = new CreateUserCommand(); // Empty command will fail validation
+        var command = new CreateUserCommand();
+        var validator = new CreateUserCommandValidator();
 
         // When
-        var act = () => _handler.Handle(command, CancellationToken.None);
+        var result = await validator.ValidateAsync(command);
 
         // Then
-        await act.Should().ThrowAsync<FluentValidation.ValidationException>();
+        result.IsValid.Should().BeFalse();
+        result.Errors.Should().NotBeEmpty();
     }
 
     /// <summary>
