@@ -1,0 +1,10 @@
+@host = http://localhost:8080
+
+### Authenticate (seeded development admin)
+POST {{host}}/api/auth
+Content-Type: application/json
+
+{
+  "email": "admin@developerstore.local",
+  "password": "Admin@123"
+}
