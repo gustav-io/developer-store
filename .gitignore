@@ -367,3 +367,4 @@ FodyWeavers.xsd
 # Test and coverage output
 TestResults/
 coverage.cobertura.xml
+.playwright-mcp/
