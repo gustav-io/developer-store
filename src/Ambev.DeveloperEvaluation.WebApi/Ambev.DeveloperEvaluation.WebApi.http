@@ -1,4 +1,7 @@
 @host = http://localhost:8080
+@token = paste-token-from-auth-response
+@saleId = paste-sale-id
+@itemId = paste-item-id
 
 ### Authenticate (seeded development admin)
 POST {{host}}/api/auth
@@ -7,4 +10,67 @@ Content-Type: application/json
 {
   "email": "admin@developerstore.local",
   "password": "Admin@123"
+}
+
+### Create sale (12 units -> 20% off, 5 units -> 10% off)
+POST {{host}}/api/sales
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "customerId": "6f1c1a7e-2b0e-4a6f-9d2a-1c1d2e3f4a5b",
+  "customerName": "Maria Silva",
+  "branchId": "0b7d5d9c-8c1e-4b1c-a2d3-4e5f6a7b8c9d",
+  "branchName": "São Paulo - Centro",
+  "items": [
+    { "productId": "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d", "productName": "Brahma 350ml", "unitPrice": 4.50, "quantity": 12 },
+    { "productId": "b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e", "productName": "Skol 269ml", "unitPrice": 3.20, "quantity": 5 }
+  ]
+}
+
+### Get sale
+GET {{host}}/api/sales/{{saleId}}
+Authorization: Bearer {{token}}
+
+### Update sale (replaces header and items)
+PUT {{host}}/api/sales/{{saleId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "saleDate": "2026-09-18T12:00:00Z",
+  "customerId": "6f1c1a7e-2b0e-4a6f-9d2a-1c1d2e3f4a5b",
+  "customerName": "Maria Silva",
+  "branchId": "0b7d5d9c-8c1e-4b1c-a2d3-4e5f6a7b8c9d",
+  "branchName": "São Paulo - Centro",
+  "items": [
+    { "productId": "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d", "productName": "Brahma 350ml", "unitPrice": 4.50, "quantity": 3 }
+  ]
+}
+
+### Cancel item
+PATCH {{host}}/api/sales/{{saleId}}/items/{{itemId}}/cancel
+Authorization: Bearer {{token}}
+
+### Cancel sale
+PATCH {{host}}/api/sales/{{saleId}}/cancel
+Authorization: Bearer {{token}}
+
+### Delete sale
+DELETE {{host}}/api/sales/{{saleId}}
+Authorization: Bearer {{token}}
+
+### More than 20 units -> 400 BusinessRuleViolation
+POST {{host}}/api/sales
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "customerId": "6f1c1a7e-2b0e-4a6f-9d2a-1c1d2e3f4a5b",
+  "customerName": "Maria Silva",
+  "branchId": "0b7d5d9c-8c1e-4b1c-a2d3-4e5f6a7b8c9d",
+  "branchName": "São Paulo - Centro",
+  "items": [
+    { "productId": "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d", "productName": "Brahma 350ml", "unitPrice": 4.50, "quantity": 21 }
+  ]
 }
