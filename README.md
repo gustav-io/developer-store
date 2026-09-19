@@ -75,3 +75,53 @@ This section includes links to the detailed documentation for the different API 
 This section describes the overall structure and organization of the project files and directories. 
 
 See [Project Structure](/.doc/project-structure.md)
+
+## Running the project
+
+### Docker (API + PostgreSQL)
+
+```bash
+docker compose up --build
+```
+
+- Swagger: http://localhost:8080/swagger
+- Development seeds an admin: `admin@developerstore.local` / `Admin@123` → `POST /api/auth` returns the JWT; click **Authorize** in Swagger or use `src/Ambev.DeveloperEvaluation.WebApi/Ambev.DeveloperEvaluation.WebApi.http`.
+- Migrations run automatically at startup in Development.
+- If port 5432 is taken locally: `POSTGRES_PORT=5434 docker compose up --build`.
+
+### Local
+
+```bash
+docker compose up -d ambev.developerevaluation.database
+dotnet run --project src/Ambev.DeveloperEvaluation.WebApi
+```
+
+### Tests
+
+```bash
+dotnet test tests/Ambev.DeveloperEvaluation.Unit          # no external dependencies
+dotnet test tests/Ambev.DeveloperEvaluation.Integration   # PostgreSQL via Testcontainers (Docker required)
+dotnet test tests/Ambev.DeveloperEvaluation.Functional    # HTTP end-to-end via WebApplicationFactory + Testcontainers
+```
+
+## Sales API
+
+| Verb | Route | Description |
+|---|---|---|
+| POST | `/api/sales` | Create a sale (discount tiers applied per item) |
+| GET | `/api/sales` | List with `_page`, `_size`, `_order`, filters (`saleNumber`, `customerName`, `branchName`, `status`, `_minDate`, `_maxDate`, `_minTotalAmount`, `_maxTotalAmount`; `*` for partial text) |
+| GET | `/api/sales/{id}` | Get a sale |
+| PUT | `/api/sales/{id}` | Replace header and items |
+| DELETE | `/api/sales/{id}` | Remove a sale |
+| PATCH | `/api/sales/{id}/cancel` | Cancel a sale |
+| PATCH | `/api/sales/{id}/items/{itemId}/cancel` | Cancel one item |
+
+Errors follow `.doc/general-api.md`: `{ "type", "error", "detail" }` with `ValidationError` (400), `BusinessRuleViolation` (400), `ResourceNotFound` (404), `AuthenticationError` (401).
+
+## Architecture overview
+
+- **Domain** — `Sale` is an aggregate root: items, discount tiers, the 20-unit cap and cancellation rules are enforced inside it. Customer, Branch and Product are *External Identities* (`CustomerRef`, `BranchRef`, `ProductRef`) with denormalized descriptions, persisted as owned types.
+- **Application** — one folder per feature (`CreateSale`, `ListSales`, …) with command, validator, handler and result; validators run in the MediatR pipeline (`ValidationBehavior`).
+- **Events** — the aggregate raises `SaleCreated/Modified/Cancelled` and `ItemCancelled`; `DefaultContext` publishes them after `SaveChanges`; a handler logs each one and forwards a flat integration contract to **Rebus** (in-memory transport here — Azure Service Bus, RabbitMQ, etc. are a one-line transport change). A sample consumer logs the message to show the round-trip.
+- **Persistence** — EF Core + PostgreSQL; `SaleNumber` comes from a database sequence.
+- **Tests** — unit (domain + handlers, no infrastructure), integration (repository on a real PostgreSQL container), functional (HTTP through the whole pipeline).
