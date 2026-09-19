@@ -125,3 +125,14 @@ Errors follow `.doc/general-api.md`: `{ "type", "error", "detail" }` with `Valid
 - **Events** — the aggregate raises `SaleCreated/Modified/Cancelled` and `ItemCancelled`; `DefaultContext` publishes them after `SaveChanges`; a handler logs each one and forwards a flat integration contract to **Rebus** (in-memory transport here — Azure Service Bus, RabbitMQ, etc. are a one-line transport change). A sample consumer logs the message to show the round-trip.
 - **Persistence** — EF Core + PostgreSQL; `SaleNumber` comes from a database sequence.
 - **Tests** — unit (domain + handlers, no infrastructure), integration (repository on a real PostgreSQL container), functional (HTTP through the whole pipeline).
+
+## Frontend (Angular 20)
+
+```bash
+cd frontend
+npm ci
+npm start                 # http://localhost:4200, proxies /api to http://localhost:8080
+npm test -- --watch=false
+```
+
+Standalone components + Signals; the sales list state lives in a small signal store (`SalesStore`). The form previews the discount tiers client-side for feedback only — the API remains the source of truth. Login with the seeded development admin.
