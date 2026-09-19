@@ -28,6 +28,10 @@ Content-Type: application/json
   ]
 }
 
+### List sales (paging, ordering, filters)
+GET {{host}}/api/sales?_page=1&_size=10&_order=saleDate desc&customerName=Mar*
+Authorization: Bearer {{token}}
+
 ### Get sale
 GET {{host}}/api/sales/{{saleId}}
 Authorization: Bearer {{token}}
