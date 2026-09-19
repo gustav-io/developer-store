@@ -3,9 +3,11 @@ using Ambev.DeveloperEvaluation.Application.Sales.CancelSaleItem;
 using Ambev.DeveloperEvaluation.Application.Sales.CreateSale;
 using Ambev.DeveloperEvaluation.Application.Sales.DeleteSale;
 using Ambev.DeveloperEvaluation.Application.Sales.GetSale;
+using Ambev.DeveloperEvaluation.Application.Sales.ListSales;
 using Ambev.DeveloperEvaluation.Application.Sales.UpdateSale;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.CreateSale;
+using Ambev.DeveloperEvaluation.WebApi.Features.Sales.ListSales;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.UpdateSale;
 using AutoMapper;
 using MediatR;
@@ -49,6 +51,27 @@ public class SalesController : BaseController
             Message = "Sale created successfully",
             Data = response
         });
+    }
+
+    /// <summary>
+    /// Lists sales. Supports _page, _size, _order ("field [asc|desc], ...") and filters:
+    /// saleNumber, customerName, branchName (use '*' for partial), status, _minDate/_maxDate, _minTotalAmount/_maxTotalAmount.
+    /// </summary>
+    [HttpGet]
+    [ProducesResponseType(typeof(PaginatedResponse<SaleResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ListSales([FromQuery] ListSalesRequest request, CancellationToken cancellationToken)
+    {
+        var command = _mapper.Map<ListSalesCommand>(request);
+        var result = await _mediator.Send(command, cancellationToken);
+
+        var page = new PaginatedList<SaleResponse>(
+            _mapper.Map<List<SaleResponse>>(result.Items),
+            result.TotalCount,
+            result.CurrentPage,
+            result.PageSize);
+
+        return OkPaginated(page);
     }
 
     /// <summary>
