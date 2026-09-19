@@ -26,12 +26,12 @@ public static class LoggingExtension
         .WithDestructurers([new DbUpdateExceptionDestructurer()]);
 
     /// <summary>
-    /// A filter predicate to exclude log events with specific criteria.
+    /// A filter predicate to exclude noisy Information events (successful health checks).
+    /// Warnings and errors are never excluded.
     /// </summary>
     static readonly Func<LogEvent, bool> _filterPredicate = exclusionPredicate =>
     {
-
-        if (exclusionPredicate.Level != LogEventLevel.Information) return true;
+        if (exclusionPredicate.Level != LogEventLevel.Information) return false;
 
         exclusionPredicate.Properties.TryGetValue("StatusCode", out var statusCode);
         exclusionPredicate.Properties.TryGetValue("Path", out var path);
