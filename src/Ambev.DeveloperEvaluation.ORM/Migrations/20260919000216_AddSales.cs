@@ -32,7 +32,7 @@ namespace Ambev.DeveloperEvaluation.ORM.Migrations
                 name: "Sales",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     SaleNumber = table.Column<long>(type: "bigint", nullable: false, defaultValueSql: "nextval('\"SaleNumbers\"')"),
                     SaleDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     CustomerId = table.Column<Guid>(type: "uuid", nullable: false),
@@ -53,7 +53,7 @@ namespace Ambev.DeveloperEvaluation.ORM.Migrations
                 name: "SaleItems",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     SaleId = table.Column<Guid>(type: "uuid", nullable: false),
                     ProductId = table.Column<Guid>(type: "uuid", nullable: false),
                     ProductName = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),

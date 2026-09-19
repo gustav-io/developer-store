@@ -28,9 +28,7 @@ namespace Ambev.DeveloperEvaluation.ORM.Migrations
             modelBuilder.Entity("Ambev.DeveloperEvaluation.Domain.Entities.Sale", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasDefaultValueSql("gen_random_uuid()");
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -70,9 +68,7 @@ namespace Ambev.DeveloperEvaluation.ORM.Migrations
             modelBuilder.Entity("Ambev.DeveloperEvaluation.Domain.Entities.SaleItem", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasDefaultValueSql("gen_random_uuid()");
+                        .HasColumnType("uuid");
 
                     b.Property<decimal>("DiscountAmount")
                         .HasPrecision(18, 2)
@@ -155,7 +151,6 @@ namespace Ambev.DeveloperEvaluation.ORM.Migrations
                     b.OwnsOne("Ambev.DeveloperEvaluation.Domain.ValueObjects.BranchRef", "Branch", b1 =>
                         {
                             b1.Property<Guid>("SaleId")
-                                .ValueGeneratedOnAdd()
                                 .HasColumnType("uuid");
 
                             b1.Property<Guid>("Id")
@@ -179,7 +174,6 @@ namespace Ambev.DeveloperEvaluation.ORM.Migrations
                     b.OwnsOne("Ambev.DeveloperEvaluation.Domain.ValueObjects.CustomerRef", "Customer", b1 =>
                         {
                             b1.Property<Guid>("SaleId")
-                                .ValueGeneratedOnAdd()
                                 .HasColumnType("uuid");
 
                             b1.Property<Guid>("Id")
@@ -220,7 +214,6 @@ namespace Ambev.DeveloperEvaluation.ORM.Migrations
                     b.OwnsOne("Ambev.DeveloperEvaluation.Domain.ValueObjects.ProductRef", "Product", b1 =>
                         {
                             b1.Property<Guid>("SaleItemId")
-                                .ValueGeneratedOnAdd()
                                 .HasColumnType("uuid");
 
                             b1.Property<Guid>("Id")

@@ -11,7 +11,9 @@ public class SaleConfiguration : IEntityTypeConfiguration<Sale>
         builder.ToTable("Sales");
 
         builder.HasKey(s => s.Id);
-        builder.Property(s => s.Id).HasColumnType("uuid").HasDefaultValueSql("gen_random_uuid()");
+        // Identity is assigned by the aggregate (Sale.Create); a database default would make EF treat
+        // navigated entities with a set key as existing rows instead of new ones.
+        builder.Property(s => s.Id).HasColumnType("uuid").ValueGeneratedNever();
 
         builder.Property(s => s.SaleNumber)
             .HasDefaultValueSql($"nextval('\"{DefaultContext.SaleNumberSequence}\"')")
