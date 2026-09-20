@@ -1,0 +1,13 @@
+<header class="topbar">
+  <a routerLink="/sales" class="brand">Developer Store</a>
+  <nav>
+    @if (auth.isAuthenticated()) {
+      <a routerLink="/sales">Sales</a>
+      <a routerLink="/sales/new">New sale</a>
+      <button type="button" (click)="logout()">Logout</button>
+    }
+  </nav>
+</header>
+<main class="container">
+  <router-outlet />
+</main>

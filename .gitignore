@@ -363,3 +363,8 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 .idea
+
+# Test and coverage output
+TestResults/
+coverage.cobertura.xml
+.playwright-mcp/
